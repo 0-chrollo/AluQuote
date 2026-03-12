@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+   
+    <title>AluQuote | Quotation Tool | MVP</title>
+
+</head>
+<body>
+
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo"> 
+             <!--   <img src="phiribathong-logo.png" alt="Logo" > -->
+                <h4>AluQuote</h4>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+               
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+
+
+
+
+
+
+
+     <style>
+            :root {
+                --bg: #cfcfcf;
+                --card-bg:#081722;
+                --accent: #1c566e;
+                --success: #22c55e;
+                --text-main: #f8fafc;
+                --text-dim: #bdbdbd;
+            }
+    
+            body { 
+                font-family: 'Inter', system-ui, sans-serif; 
+                background: var(--bg); 
+                color: var(--text-main);
+                margin: 0;
+                padding: 10px;
+                display: flex;
+                justify-content: center;
+            }
+    
+            .app-container {
+                margin-top:5rem;
+                width: 100%;
+                max-width: 450px;
+            }
+    
+            .card {
+                background: var(--card-bg);
+                border-radius: 2px;
+                padding: 20px;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+    
+            /* Tabs */
+            .tabs {
+                display: flex;
+                background: #0f172a;
+                padding: 4px;
+                border-radius: 2px;
+                margin-bottom: 24px;
+            }
+            .tab {
+                flex: 1;
+                padding: 10px;
+                text-align: center;
+                font-size: 0.85rem;
+                font-weight: 600;
+                cursor: pointer;
+                border-radius: 2px;
+                color: var(--text-dim);
+                transition: 0.3s;
+            }
+            .tab.active {
+                background: var(--accent);
+                color: var(--bg);
+            }
+    
+            .view { display: none; }
+            .view.active { display: block; }
+    
+            h2 { font-size: 1.5rem; margin-bottom: 20px; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+    
+            .input-group { margin-bottom: 16px; }
+            label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 6px; }
+            input, select {
+                width: 100%;
+                background: #0f172a;
+                border: 1px solid #334155;
+                border-radius: 2px;
+                padding: 14px;
+                color: white;
+                font-size: 1rem;
+                transition: border 0.3s;
+                box-sizing: border-box;
+            }
+            input:focus { border-color: var(--accent); outline: none; }
+    
+            .btn {
+                width: 100%;
+                padding: 16px;
+                border-radius: 2px;
+                border: none;
+                font-weight: 700;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: transform 0.1s;
+            }
+            .btn:active { transform: scale(0.98); }
+            .btn-primary { background: var(--accent); color: var(--bg); margin-top: 10px; }
+            .btn-pdf { background: #334155; color: white; margin-top: 12px; display: none; }
+    
+            /* Results Display */
+            #results-area {
+                margin-top: 24px;
+                padding-top: 24px;
+                border-top: 1px solid rgba(255,255,255,0.1);
+            }
+            .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+            .stat-box {
+                background: rgba(255,255,255,0.03);
+                padding: 12px;
+                border-radius: 10px;
+                border: 1px solid rgba(255,255,255,0.05);
+            }
+            .stat-label { font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 4px; }
+            .stat-value { font-size: 1rem; font-weight: 600; color: var(--text-main); }
+            
+            .price-hero {
+                background: linear-gradient(135deg,  #1c566e 0%,  #0c3749 100%);
+                padding: 20px;
+                border-radius: 2px;
+                text-align: center;
+                margin-bottom: 15px;
+            }
+            .price-hero span { font-size: 0.8rem; opacity: 0.9; font-weight: 600; text-transform: uppercase; }
+            .price-hero h1 { margin: 5px 0 0 0; font-size: 2rem; color: white; }
+    
+            /* Hidden PDF Header */
+            #pdf-header { display: none; color: #000; text-align: center; }
+        </style>
+ 
+    
+    <div class="app-container">
+        <div class="card">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('calc')">Calculator</div>
+                <div class="tab" onclick="switchTab('settings')">Settings</div>
+            </div>
+    
+            <div id="calc-view" class="view active">
+                <h2>📏 New Quote</h2>
+                <div class="input-group">
+                    <label>Client Reference</label>
+                    <input type="text" id="client" placeholder="e.g. UnitWebs Project">
+                </div>
+                <div class="stat-grid">
+                    <div class="input-group">
+                        <label>Width (mm)</label>
+                        <input type="number" id="width" placeholder="1200">
+                    </div>
+                    <div class="input-group">
+                        <label>Height (mm)</label>
+                        <input type="number" id="height" placeholder="900">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Glass Price (R/m²)</label>
+                    <input type="number" id="cfg-glass" value="480">
+                </div>
+                <button class="btn btn-primary" onclick="calculate()">Generate Figures</button>
+    
+                <div id="results-area">
+                    <div class="price-hero">
+                        <span>Final Quote Total</span>
+                        <h1 id="resTotal">R 0.00</h1>
+                    </div>
+    
+                    <div class="stat-grid">
+                        <div class="stat-box">
+                            <span class="stat-label">Sash Height (x2)</span>
+                            <span class="stat-value" id="resSashH">-</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Sash Width (x2)</span>
+                            <span class="stat-value" id="resSashW">-</span>
+                        </div>
+                        <div class="stat-box" style="grid-column: span 2;">
+                            <span class="stat-label">Glass Cutting Size</span>
+                            <span class="stat-value" id="resGlass">-</span>
+                        </div>
+                    </div>
+                    <button id="pdfBtn" class="btn btn-pdf" onclick="downloadPDF()">Download PDF Receipt</button>
+                </div>
+            </div>
+    
+            <div id="settings-view" class="view">
+                <h2>⚙️ App Settings</h2>
+                <div class="input-group">
+                    <label>Alu Profile Rate (R/meter)</label>
+                    <input type="number" id="cfg-profile" value="95">
+                </div>
+                <div class="input-group">
+                    <label>Profit Markup (1.5 = 50%)</label>
+                    <input type="number" id="cfg-markup" value="1.5" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>Base Hardware Cost (R)</label>
+                    <input type="number" id="cfg-hw" value="550">
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-dim);">Settings are saved automatically to your device.</p>
+            </div>
+        </div>
+    
+        <div id="pdf-template" style="display:none; color: #000; padding: 40px; background: white;">
+            <h1 style="color:#0ea5e9">UnitWebs Installations</h1>
+            <p><strong>Quote Date:</strong> <span id="pdf-date"></span></p>
+            <p><strong>Customer:</strong> <span id="pdf-client"></span></p>
+            <hr>
+            <h3>Specifications</h3>
+            <p>Dimensions: <span id="pdf-dim"></span></p>
+            <p>Cutting List: <span id="pdf-cuts"></span></p>
+            <hr>
+            <h2 style="color: #22c55e">Total Amount: <span id="pdf-total"></span></h2>
+        </div>
+    </div>
+    
+    <script>
+        // Tab Logic
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(tab + '-view').classList.add('active');
+            
+            if(tab === 'calc') saveSettings();
+        }
+    
+        function saveSettings() {
+            localStorage.setItem('cfg-profile', document.getElementById('cfg-profile').value);
+            localStorage.setItem('cfg-markup', document.getElementById('cfg-markup').value);
+            localStorage.setItem('cfg-hw', document.getElementById('cfg-hw').value);
+        }
+    
+        function calculate() {
+            const w = parseFloat(document.getElementById('width').value);
+            const h = parseFloat(document.getElementById('height').value);
+            if(!w || !h) return;
+    
+            const pRate = parseFloat(document.getElementById('cfg-profile').value);
+            const gRate = parseFloat(document.getElementById('cfg-glass').value);
+            const markup = parseFloat(document.getElementById('cfg-markup').value);
+            const hw = parseFloat(document.getElementById('cfg-hw').value);
+    
+            // Deductions
+            const sH = h - 42;
+            const sW = (w / 2) + 20;
+            const gW = sW - 55;
+            const gH = sH - 55;
+    
+            const mAlu = ((w*2)+(h*2)+(sW*4)+(sH*4))/1000;
+            const cost = (mAlu * pRate) + (((gW*gH*2)/1000000)*gRate) + hw;
+            const total = cost * markup;
+    
+            // UI Update
+            document.getElementById('resSashH').innerText = sH + "mm";
+            document.getElementById('resSashW').innerText = sW + "mm";
+            document.getElementById('resGlass').innerText = gW + " x " + gH + " (x2)";
+            document.getElementById('resTotal').innerText = "R " + total.toLocaleString(undefined, {minimumFractionDigits: 2});
+            
+            document.getElementById('results-area').style.display = 'block';
+            document.getElementById('pdfBtn').style.display = 'block';
+        }
+    
+        function downloadPDF() {
+            const date = new Date().toLocaleDateString();
+            const client = document.getElementById('client').value || "Customer";
+            
+            document.getElementById('pdf-date').innerText = date;
+            document.getElementById('pdf-client').innerText = client;
+            document.getElementById('pdf-dim').innerText = document.getElementById('width').value + " x " + document.getElementById('height').value + " mm";
+            document.getElementById('pdf-cuts').innerText = "Sash: " + document.getElementById('resSashH').innerText + " x " + document.getElementById('resSashW').innerText;
+            document.getElementById('pdf-total').innerText = document.getElementById('resTotal').innerText;
+    
+            const element = document.getElementById('pdf-template');
+            element.style.display = 'block';
+            
+            html2pdf().from(element).save(`Quote_${client}.pdf`).then(() => {
+                element.style.display = 'none';
+            });
+        }
+    </script>
+
+
+
+
+
+
+    
+</body>
+<script src="scripts.js"></script>
+</html>
